@@ -5,3 +5,6 @@ Run:
 ```shell
 RUST_LOG=info cargo run --example rtow_14 > image.ppm    
 ```
+
+Result:
+![Final Scene](final_scene.png)
