@@ -1,8 +1,9 @@
 use crate::color::Color;
 use crate::hit::hittable::HitRecord;
+use crate::random::random;
 use crate::ray::Ray;
 use crate::vec3::Vec3;
-use crate::random::random;
+
 pub struct Scatter {
     pub attenuation: Color,
     pub ray: Ray,
@@ -45,7 +46,7 @@ impl From<Dielectric> for Material {
 
 #[derive(Clone)]
 pub struct Lambertian {
-    albedo: Color
+    albedo: Color,
 }
 
 impl Lambertian {
@@ -60,7 +61,7 @@ impl Lambertian {
         }
         Some(Scatter {
             attenuation: self.albedo.clone(),
-            ray: Ray::new(hit_record.point, scatter_direction)
+            ray: Ray::new(hit_record.point, scatter_direction),
         })
     }
 }
@@ -97,7 +98,6 @@ impl Metal {
     }
 }
 
-
 #[derive(Clone)]
 pub struct Dielectric {
     // Refractive index in vacuum or air, or the ratio of the material's refractive index over
@@ -131,7 +131,7 @@ impl Dielectric {
         Ray::new(hit_record.point.clone(), direction)
     }
 
-    fn refract(&self,  ray: &Ray, hit_record: &HitRecord) -> Option<Ray> {
+    fn refract(&self, ray: &Ray, hit_record: &HitRecord) -> Option<Ray> {
         let direction = ray.direction.unit();
         let n = &hit_record.normal;
         let cos_theta = hit_record.normal.dot(&(-&direction)).min(1.);
@@ -139,7 +139,7 @@ impl Dielectric {
         let refraction_index = self.refraction_index(hit_record.outside);
         let must_reflect = sin_theta * refraction_index > 1.;
         if must_reflect || (Self::reflectance(cos_theta, refraction_index) > random()) {
-            return None
+            return None;
         }
 
         let perpendicular = (direction + n * cos_theta) * refraction_index;
@@ -148,9 +148,11 @@ impl Dielectric {
     }
 
     fn scatter(&self, ray: &Ray, hit_record: HitRecord) -> Option<Scatter> {
-        let refracted = self.refract(ray, &hit_record).unwrap_or_else(|| self.reflect(ray, &hit_record));
+        let refracted = self
+            .refract(ray, &hit_record)
+            .unwrap_or_else(|| self.reflect(ray, &hit_record));
         Some(Scatter {
-            attenuation: Color::one(),  // White
+            attenuation: Color::one(), // White
             ray: refracted,
         })
     }

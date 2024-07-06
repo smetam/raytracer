@@ -1,5 +1,3 @@
-use crate::hit::hittable::HitRecord;
-use crate::materials::Scatter;
 use crate::vec3::{Point3, Vec3};
 
 pub struct Ray {
@@ -8,7 +6,6 @@ pub struct Ray {
 }
 
 impl Ray {
-
     pub fn new(origin: Point3, direction: Vec3) -> Self {
         Self { origin, direction }
     }

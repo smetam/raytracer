@@ -1,12 +1,12 @@
-use std::cmp::Ordering;
-use std::ops::Range;
 use crate::hit::hittable::{HitRecord, Hittable};
 use crate::materials::Material;
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
+use std::cmp::Ordering;
+use std::ops::Range;
 
 pub struct HittableList {
-    list: Vec<Box<dyn Hittable>>
+    list: Vec<Box<dyn Hittable>>,
 }
 
 impl HittableList {
@@ -33,9 +33,9 @@ impl Hittable for HittableList {
     }
 
     fn hit(&self, ray: &Ray, time_range: &Range<f64>) -> Option<HitRecord> {
-        self.list.iter()
+        self.list
+            .iter()
             .filter_map(|item| item.hit(ray, time_range))
             .min_by(|l, r| l.time.partial_cmp(&r.time).unwrap_or(Ordering::Equal))
-
     }
 }

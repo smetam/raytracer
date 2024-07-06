@@ -1,8 +1,8 @@
-use std::ops::Range;
 use crate::hit::hittable::{HitRecord, Hittable};
 use crate::materials::Material;
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
+use std::ops::Range;
 
 pub struct Sphere {
     center: Point3,
@@ -13,8 +13,12 @@ pub struct Sphere {
 impl Sphere {
     pub fn new(center: Point3, radius: f64, material: Material) -> Self {
         let radius = radius.max(0.);
-        Self {center, radius, material}
-    } 
+        Self {
+            center,
+            radius,
+            material,
+        }
+    }
 }
 
 impl Hittable for Sphere {
@@ -34,18 +38,18 @@ impl Hittable for Sphere {
         let discriminant = h * h - a * c;
 
         if discriminant < 0. {
-            return None
+            return None;
         }
         let sqrt = discriminant.sqrt();
 
         let root = (h - sqrt) / a;
         if time_range.contains(&root) {
-            return Some(HitRecord::new(ray, self, root))
+            return Some(HitRecord::new(ray, self, root));
         }
 
         let root = (h + sqrt) / a;
         if time_range.contains(&root) {
-            return Some(HitRecord::new(ray, self, root))
+            return Some(HitRecord::new(ray, self, root));
         }
 
         None

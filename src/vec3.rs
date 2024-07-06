@@ -1,13 +1,11 @@
+use crate::random::{random, random_range};
+use std::fmt::Formatter;
 use std::{
     fmt::Display,
-    iter::Sum,
     ops::{
-        Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Range, Sub,
-        SubAssign,
+        Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Range, Sub, SubAssign,
     },
 };
-use std::fmt::Formatter;
-use crate::random::{random, random_range};
 
 #[derive(Default, Clone, Debug, PartialOrd, PartialEq)]
 pub struct Vec3 {
@@ -18,9 +16,7 @@ pub struct Vec3 {
 
 pub type Point3 = Vec3;
 
-
 impl Vec3 {
-
     /// Create hew vector.
     pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
@@ -63,21 +59,17 @@ impl Vec3 {
     pub fn random_unit_on_hemisphere(normal: &Vec3) -> Self {
         let vec = Self::random_unit();
         if vec.dot(normal) > 0. {
-            return vec
+            return vec;
         } else {
-            return -vec
+            return -vec;
         }
     }
 
     pub fn random_in_unit_disk() -> Self {
         loop {
-            let vec = Vec3::new(
-                random_range(-1.0..1.0),
-                random_range(-1.0..1.0),
-                0.0
-            );
+            let vec = Vec3::new(random_range(-1.0..1.0), random_range(-1.0..1.0), 0.0);
             if vec.length_squared() < 1. {
-                return vec
+                return vec;
             }
         }
     }
@@ -117,7 +109,6 @@ impl Vec3 {
         let s = 1e-8;
         (self.x.abs() + self.y.abs() + self.z.abs()) < s
     }
-
 }
 
 impl Display for Vec3 {
@@ -134,20 +125,24 @@ impl Index<usize> for Vec3 {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
-            _ => panic!("Only (0, 1, 2) are valid indexes for Vec3, however {} provided", index),
+            _ => panic!(
+                "Only (0, 1, 2) are valid indexes for Vec3, however {} provided",
+                index
+            ),
         }
     }
 }
 
-
 impl IndexMut<usize> for Vec3 {
-
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         match index {
             0 => &mut self.x,
             1 => &mut self.y,
             2 => &mut self.z,
-            _ => panic!("Only (0, 1, 2) are valid indexes for Vec3, however {} provided", index),
+            _ => panic!(
+                "Only (0, 1, 2) are valid indexes for Vec3, however {} provided",
+                index
+            ),
         }
     }
 }
@@ -252,9 +247,8 @@ impl Mul<Self> for &Vec3 {
     type Output = Vec3;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Vec3::new(self.x * rhs.x,self.y * rhs.y,self.z * rhs.z)
+        Vec3::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
-    
 }
 
 impl Mul<Self> for Vec3 {
@@ -263,7 +257,6 @@ impl Mul<Self> for Vec3 {
     fn mul(self, rhs: Self) -> Self::Output {
         &self * &rhs
     }
-
 }
 
 impl MulAssign<&Self> for Vec3 {
@@ -278,7 +271,7 @@ impl Mul<f64> for &Vec3 {
     type Output = Vec3;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Vec3::new(self.x * rhs,self.y * rhs,self.z * rhs)
+        Vec3::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 

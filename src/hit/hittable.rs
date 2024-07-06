@@ -1,7 +1,7 @@
-use std::ops::Range;
 use crate::materials::Material;
 use crate::ray::Ray;
-use crate::vec3::{Vec3, Point3};
+use crate::vec3::{Point3, Vec3};
+use std::ops::Range;
 
 pub struct HitRecord {
     pub point: Point3,
@@ -24,12 +24,9 @@ impl HitRecord {
             outside,
         }
     }
-
-
 }
 
 pub trait Hittable {
-
     /// This should always return a vector that has a unit length.
     fn normal(&self, hit_point: &Point3) -> Vec3;
 

@@ -1,38 +1,45 @@
-use crate::color::{Color, write_color};
+use crate::color::{write_color, Color};
+use crate::hit::hittable::Hittable;
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
-use crate::hit::hittable::Hittable;
 
-use log;
 use crate::hit::list::HittableList;
 use crate::hit::sphere::Sphere;
 use crate::random::sample_square;
-
+use log;
 
 pub struct Camera {
-    aspect_ratio: f64,    // Ratio of image width over height
-    image_width: i32,     // Rendered image width in pixels
-    image_height: i32,    // Rendered image height
-    center: Point3,       // Camera center
+    aspect_ratio: f64,      // Ratio of image width over height
+    image_width: i32,       // Rendered image width in pixels
+    image_height: i32,      // Rendered image height
+    center: Point3,         // Camera center
     pixel00_loc: Point3,    // Location of pixel 0, 0
     pixel_delta_u: Vec3,    // Offset to pixel to the right
     pixel_delta_v: Vec3,    // Offset to pixel below
     samples_per_pixel: i32, // Count of random samples for each pixel
-    max_depth: i32,     // Maximum number of ray bounces into scene
-    vfov: f64,          // Vertical view angle (field of view)
-    look_from: Point3,  // Point camera is looking from
-    look_at: Point3,    // Point camera is looking at
-    vup: Vec3,          // Camera-relative "up" direction
-
-    defocus_angle: f64,  // Variation angle of rays through each pixel
+    max_depth: i32,         // Maximum number of ray bounces into scene
+    vfov: f64,              // Vertical view angle (field of view)
+    look_from: Point3,      // Point camera is looking from
+    look_at: Point3,        // Point camera is looking at
+    vup: Vec3,              // Camera-relative "up" direction
+    defocus_angle: f64,     // Variation angle of rays through each pixel
     focus_distance: f64,    // Distance from camera look_from point to plane of perfect focus
-    defocus_disk_u: Vec3,  // Defocus disk horizontal radius
-    defocus_disk_v: Vec3,  // Defocus disk vertical radius
+    defocus_disk_u: Vec3,   // Defocus disk horizontal radius
+    defocus_disk_v: Vec3,   // Defocus disk vertical radius
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, image_width: i32, samples_per_pixel: i32, max_depth: i32, vfov: f64,
-               look_from: Point3, look_at: Point3, vup: Vec3, defocus_angle: f64, focus_distance: f64,
+    pub fn new(
+        aspect_ratio: f64,
+        image_width: i32,
+        samples_per_pixel: i32,
+        max_depth: i32,
+        vfov: f64,
+        look_from: Point3,
+        look_at: Point3,
+        vup: Vec3,
+        defocus_angle: f64,
+        focus_distance: f64,
     ) -> Self {
         // Calculate the image height, and ensure that it's at least 1.
         let image_height = (image_width as f64 / aspect_ratio) as i32;
@@ -57,13 +64,10 @@ impl Camera {
         let pixel_delta_v = &viewport_v / image_height as f64;
 
         // Calculate the location of the upper left pixel.
-        let viewport_upper_left = &center
-            - &w * focus_distance
-            - &viewport_u / 2.
-            - &viewport_v / 2.;
+        let viewport_upper_left =
+            &center - &w * focus_distance - &viewport_u / 2. - &viewport_v / 2.;
 
-
-        let pixel00_loc = &viewport_upper_left + &(&pixel_delta_u + &pixel_delta_v) * 0.5;
+        let pixel00_loc = viewport_upper_left + (&pixel_delta_u + &pixel_delta_v) * 0.5;
 
         // Calculate the camera defocus disk basis vectors.
         let defocus_radius = (defocus_angle / 2.).to_radians().tan() * focus_distance;
@@ -89,7 +93,6 @@ impl Camera {
             defocus_disk_u,
             defocus_disk_v,
         }
-
     }
 
     pub fn render(&self, world: &HittableList) {
@@ -132,11 +135,11 @@ impl Camera {
     fn defocus_disk_sample(&self) -> Point3 {
         let p = Vec3::random_in_unit_disk();
         &self.center + &self.defocus_disk_u * p.x + &self.defocus_disk_v * p.y
-}
+    }
 
     fn ray_color(ray: &Ray, world: &HittableList, depth: i32) -> Color {
         if depth <= 0 {
-            return Color::zero() // Black
+            return Color::zero(); // Black
         }
 
         let all_time = 0.001..f64::INFINITY;
@@ -146,7 +149,7 @@ impl Camera {
                 Self::ray_color(&scatter.ray, world, depth - 1) * scatter.attenuation
             } else {
                 Color::zero()
-            }
+            };
         }
 
         let unit_direction = ray.direction.unit();

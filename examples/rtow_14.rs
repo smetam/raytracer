@@ -3,15 +3,18 @@ use raytracer::color::Color;
 use raytracer::hit::list::HittableList;
 use raytracer::hit::sphere::Sphere;
 use raytracer::materials::{Dielectric, Lambertian, Metal};
-use raytracer::vec3::{Point3, Vec3};
 use raytracer::random::random;
-
+use raytracer::vec3::{Point3, Vec3};
 
 fn build_world() -> HittableList {
     let mut world = HittableList::new();
 
     let ground_material = Lambertian::new(Color::new(0.5, 0.5, 0.5));
-    world.add(Sphere::new(Point3::new(0., -1000.,0.), 1000.0, ground_material.into()));
+    world.add(Sphere::new(
+        Point3::new(0., -1000., 0.),
+        1000.0,
+        ground_material.into(),
+    ));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -19,7 +22,6 @@ fn build_world() -> HittableList {
             let center = Point3::new(a as f64 + 0.9 * random(), 0.2, b as f64 + 0.9 * random());
 
             if (&center - Point3::new(4., 0.2, 0.)).length() > 0.9 {
-
                 let sphere_material = if choose_mat < 0.8 {
                     // diffuse
                     let albedo: Color = Color::random() * Color::random();
@@ -49,7 +51,6 @@ fn build_world() -> HittableList {
     world
 }
 
-
 fn main() {
     env_logger::init();
     // World
@@ -58,7 +59,7 @@ fn main() {
     // Render
     let aspect_ratio = 16. / 9.;
     let image_width = 1200;
-    let samples_per_pixel= 500;
+    let samples_per_pixel = 500;
     let max_depth = 50;
 
     let vfov = 20.;
@@ -68,6 +69,17 @@ fn main() {
 
     let defocus_angle = 0.6;
     let focus_distance = 10.;
-    let camera = Camera::new(aspect_ratio, image_width, samples_per_pixel, max_depth, vfov, look_from, look_at, vup, defocus_angle, focus_distance);
+    let camera = Camera::new(
+        aspect_ratio,
+        image_width,
+        samples_per_pixel,
+        max_depth,
+        vfov,
+        look_from,
+        look_at,
+        vup,
+        defocus_angle,
+        focus_distance,
+    );
     camera.render(&world)
 }
